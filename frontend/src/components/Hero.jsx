@@ -1,24 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
-  ArrowRight, 
-  PhoneCall, 
-  X, 
-  Plus,
-  Minus
+  X,
+  MessageCircle,
+  ArrowDown
 } from 'lucide-react';
 
 export default function Home({ setActiveTab }) {
   const [lightboxImg, setLightboxImg] = useState(null);
-  const [openFaq, setOpenFaq] = useState(0);
-
-  const faqList = [
-    { q: "How far in advance should we book?", a: "We typically book 3-6 months in advance for portraits, and 9-12 months for weddings at Kamal Digital Studio. However, we always welcome last-minute magic when possible." },
-    { q: "Do you travel?", a: "Yes, our cinematography team based in Moradabad frequently travels across Uttar Pradesh and PAN India for destination events." },
-    { q: "Can you help us with planning our timeline?", a: "Absolutely, Jitendra Ji guides you through custom event scheduling to capture optimal lighting and raw emotions." },
-    { q: "What should be worn for a session?", a: "We recommend traditional or elegant attire matching the theme of your celebrations in Moradabad." },
-    { q: "How will I receive my images?", a: "Delivered via a secure high-resolution online digital vault along with luxury physical handcrafted albums." },
-    { q: "What if the weather doesn't cooperate?", a: "We monitor venue conditions closely and coordinate seamless adjustments to ensure zero disruption." }
+  
+  // Hero section image slideshow state (3 images changing every 3 seconds)
+  const heroImages = [
+    "https://res.cloudinary.com/doa6d6cyf/image/upload/v1791702602/Centered_couple_in_a_mirrored_setting_ubeyue.png",
+    "https://res.cloudinary.com/tkhv6b6p/image/upload/v1791141091/9e91eb85f896212dccaf39f0682c985c.jpg",
+    "https://res.cloudinary.com/tkhv6b6p/image/upload/v1791141093/vicky-photography-studio-nandauli-ayodhya-photographers-92bh153zha.avif"
   ];
+  const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentHeroIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [heroImages.length]);
+
+  const worksRef = useRef(null);
+  const coverageRef = useRef(null);
+  const storyRef = useRef(null);
+
+  const scrollToSection = (elementRef) => {
+    if (elementRef && elementRef.current) {
+      elementRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleWhatsAppChat = () => {
+    const phoneNumber = "919837000000"; 
+    const message = "Hello Jitendra Ji, I would like to book a consultation for our wedding/events with Kamal Digital Studio.";
+    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+  };
 
   return (
     <div className="bg-[#F6F3EE] text-[#1A1A1A] font-sans tracking-tight relative overflow-x-hidden selection:bg-[#C5A059] selection:text-black" style={{ scrollBehavior: 'smooth' }}>
@@ -26,326 +45,236 @@ export default function Home({ setActiveTab }) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
 
-        .font-editorial { font-family: 'Cormorant Garamond', Georgia, serif; }
-        .font-clean { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-luxury-serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+        .font-luxury-sans { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* Exactly 2 columns per row with zero gap */
+        .zero-gap-grid {
+          display: grid;
+          grid-template-columns: repeat(1, 1fr);
+          gap: 0px;
+        }
+        @media (min-width: 768px) {
+          .zero-gap-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
       `}</style>
 
       {/* =========================================================================
-          1. HERO SECTION (Laptop untouched, Mobile spacing optimized upwards)
+          1. HERO SECTION (3-Image Slideshow, No Text, Single Scroll Button)
       ======================================================================== */}
-      <section className="relative z-10 w-full min-h-[90vh] sm:h-[110vh] bg-[#F6F3EE] text-[#1A1A1A] flex flex-col justify-center pt-2 sm:pt-20 pb-8 px-4 sm:px-12 overflow-hidden border-b border-stone-300">
+      <section className="relative z-10 w-full min-h-[100vh] sm:h-screen flex flex-col justify-end items-center text-center pb-16 px-6 overflow-hidden bg-[#F6F3EE]">
         
-        <div className="max-w-4xl mx-auto text-center space-y-2 sm:space-y-4 -mt-4 sm:mt-0">
-          <h1 className="font-editorial text-3xl sm:text-5xl lg:text-6xl font-normal tracking-tight leading-[1.1] uppercase">
-            Best Wedding Filmer <br />
-            <span className="font-semibold text-[#B8860B]">Moradabad</span>
-          </h1>
-          <p className="font-clean text-[11px] sm:text-xs text-stone-600 max-w-md mx-auto font-light leading-relaxed px-2">
-            We are a premier photography studio at Guratthi Court Road, Moradabad, providing exceptional cinematic services for weddings, portraits, and celebrations.
-          </p>
-          
-          <div className="flex items-center justify-center gap-3 pt-2">
-            <button
-              onClick={() => setActiveTab && setActiveTab('contact')}
-              className="px-6 py-2.5 rounded-full bg-[#C5A059] hover:bg-[#b08b45] text-stone-950 font-clean text-xs uppercase tracking-widest font-bold shadow-md transition-all cursor-pointer"
-            >
-              Get Cort
-            </button>
-            <button
-              onClick={() => setActiveTab && setActiveTab('services')}
-              className="px-6 py-2.5 rounded-full bg-transparent hover:bg-stone-200 text-stone-900 font-clean text-xs uppercase tracking-widest border border-[#C5A059]/60 transition-all cursor-pointer font-medium"
-            >
-              What We Do 
-            </button>
+        {/* Slideshow Background Images */}
+        {heroImages.map((img, idx) => (
+          <div 
+            key={idx}
+            className={`absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out ${idx === currentHeroIndex ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <img 
+              src={img} 
+              alt="Kamal Digital Studio Hero Slide" 
+              loading="eager"
+              fetchPriority="high"
+              className="w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-black/40" />
           </div>
+        ))}
+
+        {/* Hero Bottom Center Clean Button to Portfolio/Works */}
+        <div className="relative z-10 pb-8">
+          <button
+            onClick={() => scrollToSection(worksRef)}
+            className="px-8 py-4 rounded-full bg-white/90 hover:bg-white text-stone-900 font-luxury-sans text-xs uppercase tracking-[0.3em] font-bold shadow-2xl backdrop-blur-md transition-all duration-300 flex items-center gap-3 cursor-pointer hover:scale-105"
+          >
+            <span>Explore Portfolio</span>
+            <ArrowDown size={16} className="animate-bounce" />
+          </button>
+        </div>
+      </section>
+
+
+      {/* =========================================================================
+          2. THE ARTISAN STORY SECTION (Director Profile)
+      ======================================================================== */}
+      <section ref={storyRef} className="relative z-25 py-20 sm:py-28 px-6 sm:px-16 bg-[#F6F3EE] text-[#1A1A1A] border-b border-stone-300">
+        <div className="max-w-4xl mx-auto text-center space-y-6">
+          
+          <div className="space-y-2">
+            <span className="text-[#B8860B] font-luxury-sans text-xs uppercase tracking-[0.35em] font-bold block">
+              THE MASTERMIND BEHIND THE LENS
+            </span>
+            <h2 className="font-luxury-serif text-3xl sm:text-5xl font-light tracking-wide italic text-stone-900">
+              Jitendra Ji — Master Cinematographer
+            </h2>
+          </div>
+
+          <div className="w-full max-w-xs sm:max-w-sm mx-auto aspect-[4/5] rounded-2xl overflow-hidden shadow-xl border border-stone-300 bg-white p-2">
+            <img 
+              src="https://res.cloudinary.com/doa6d6cyf/image/upload/v1791289207/DSC_0280.JPG_wkqf3m.jpg" 
+              alt="Jitendra Ji - Director" 
+              loading="lazy"
+              className="w-full h-full object-cover rounded-xl"
+            />
+          </div>
+
+          <div className="space-y-4 max-w-2xl mx-auto">
+            <div className="inline-block px-4 py-1.5 rounded-full bg-amber-100/90 border border-amber-200 text-amber-900 text-[10px] uppercase tracking-widest font-bold">
+              Lead Director & Founder • Kamal Digital Studio
+            </div>
+            
+            <h3 className="font-luxury-serif text-2xl sm:text-3xl font-light text-stone-900 leading-snug">
+              "Every frame is crafted to evoke true emotion, heritage, and timeless beauty."
+            </h3>
+            
+            <p className="font-luxury-sans text-sm sm:text-base text-stone-700 leading-relaxed font-light tracking-wide text-justify sm:text-center">
+              Operating from Guratthi Court Road, Moradabad, Jitendra Ji brings over a decade of unmatched mastery in luxury wedding storytelling, blending candid precision with majestic cinematic vision.
+            </p>
+
+            <div className="pt-3 flex flex-col items-center justify-center">
+              <button
+                onClick={handleWhatsAppChat}
+                className="px-8 py-3.5 bg-[#25D366] hover:bg-[#20ba5a] text-white font-luxury-sans text-xs uppercase tracking-[0.2em] transition-all duration-300 cursor-pointer rounded-full font-bold shadow-md flex items-center gap-2 hover:scale-105"
+              >
+                <MessageCircle size={16} />
+                Connect on WhatsApp with Jitendra Ji
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+
+      {/* =========================================================================
+          3. EXPLORE YOUR VISUALS (Romantic Atmospheric Quote Section)
+      ======================================================================== */}
+      <section className="relative z-20 py-36 sm:py-48 px-6 text-center text-white overflow-hidden border-b border-stone-200">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://res.cloudinary.com/tkhv6b6p/image/upload/v1791141091/9e91eb85f896212dccaf39f0682c985c.jpg" 
+            alt="Explore Your Visuals" 
+            className="w-full h-full object-cover filter brightness-[0.55]"
+          />
+          <div className="absolute inset-0 bg-black/40" />
         </div>
 
-        <div className="max-w-5xl mx-auto w-full grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 pt-6 items-center justify-center">
+        <div className="relative z-10 max-w-3xl mx-auto space-y-6">
+          <span className="text-[#E6C594] font-luxury-sans text-xs uppercase tracking-[0.5em] font-bold block drop-shadow">
+            CURATED ARTISTRY
+          </span>
+          <h2 className="font-luxury-serif text-4xl sm:text-6xl font-light italic text-white drop-shadow-lg">
+            Explore Your Visuals
+          </h2>
+          <div className="w-20 h-[1px] bg-[#E6C594] mx-auto" />
+          <p className="font-luxury-serif text-lg sm:text-2xl text-stone-200 font-light italic max-w-xl mx-auto drop-shadow leading-relaxed pt-2">
+            "Where two souls intertwine in pure devotion, every glance becomes an immortal masterpiece of love."
+          </p>
+        </div>
+      </section>
+
+
+      {/* =========================================================================
+          4. SELECTED WORKS (Strictly 2 Columns Per Row, 100% Zero Gap, Dynamic)
+      ======================================================================== */}
+      <section 
+        ref={worksRef}
+        className="relative z-20 py-24 sm:py-36 px-0 max-w-full mx-auto text-center bg-[#F6F3EE]"
+      >
+        <div className="relative z-10 space-y-3 mb-16 px-6 max-w-4xl mx-auto">
+          <span className="text-[#B8860B] font-luxury-sans text-xs uppercase tracking-[0.35em] font-bold block">
+            PORTFOLIO HIGHLIGHTS
+          </span>
+          <h2 className="font-luxury-serif text-4xl sm:text-6xl font-light tracking-wide text-stone-900">
+            Selected Works
+          </h2>
+          <p className="font-luxury-sans text-xs sm:text-sm text-stone-600 max-w-md mx-auto font-light tracking-wider">
+            A continuous, flush mosaic of cinematic milestones and raw emotional chapters.
+          </p>
+        </div>
+
+        {/* 2-Column Zero-Gap Grid filling full width */}
+        <div className="zero-gap-grid w-full m-0 p-0 shadow-2xl">
           {[
-            "https://res.cloudinary.com/doa6d6cyf/image/upload/v1791139185/3-8mb_s1bb1v.jpg",
-            "https://res.cloudinary.com/doa6d6cyf/image/upload/v1788587743/IMG_2855.JPG_mkzt7n.jpg",
-            "https://res.cloudinary.com/doa6d6cyf/image/upload/v1787200591/IMG_5643.JPG_y7fuic.jpg",
-            "https://res.cloudinary.com/doa6d6cyf/image/upload/v1784919032/Screenshot_2026-07-25_001554_tldmhh.jpg"
-          ].map((imgUrl, i) => (
+            { url: "https://res.cloudinary.com/doa6d6cyf/image/upload/v1787200601/DSC05369_vlepcy.jpg", span: "aspect-[4/5]" },
+            { url: "https://res.cloudinary.com/tkhv6b6p/image/upload/v1791141092/vicky-photography-studio-nandauli-ayodhya-photographers-1q963uv9fi.avif", span: "aspect-[16/10]" },
+            { url: "https://res.cloudinary.com/tkhv6b6p/image/upload/v1791141091/9e91eb85f896212dccaf39f0682c985c.jpg", span: "aspect-[1/1]" },
+            { url: "https://res.cloudinary.com/tkhv6b6p/image/upload/v1791141093/vicky-photography-studio-nandauli-ayodhya-photographers-92bh153zha.avif", span: "aspect-[4/5]" },
+            { url: "https://res.cloudinary.com/doa6d6cyf/image/upload/v1788587741/IMG_2859.JPG_kskybg.jpg", span: "aspect-[16/10]" },
+            { url: "https://res.cloudinary.com/doa6d6cyf/image/upload/v1787200591/IMG_5643.JPG_y7fuic.jpg", span: "aspect-[4/5]" }
+          ].map((item, i) => (
             <div 
-              key={i} 
-              className={`w-full aspect-[4/4.5] rounded-xl overflow-hidden bg-white p-2 shadow-lg border border-[#C5A059]/30 transition-transform duration-500 hover:rotate-0 hover:scale-105 ${
-                i % 2 === 0 ? '-rotate-2 mt-2' : 'rotate-2 -mt-2'
-              }`}
+              key={i}
+              onClick={() => setLightboxImg({ url: item.url, title: "Masterpiece", category: "KAMAL DIGITAL STUDIO" })}
+              className={`cursor-pointer group relative overflow-hidden bg-stone-200 ${item.span} w-full m-0 p-0`}
             >
-              <img src={imgUrl} alt={`Hero Grid ${i}`} loading="eager" fetchPriority="high" className="w-full h-full object-cover rounded-lg" />
+              <img 
+                src={item.url} 
+                alt="Selected Work" 
+                loading="lazy" 
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 block m-0 p-0" 
+              />
             </div>
           ))}
         </div>
       </section>
 
-      {/* =========================================================================
-          2. DEDICATED SEPARATE ABOUT SECTION (Professional & Compact)
-      ======================================================================== */}
-      <section className="relative z-20 py-16 sm:py-32 px-6 sm:px-16 bg-[#0A0908] text-[#F6F3EE] border-b border-[#C5A059]/20">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center space-y-3 mb-12 sm:mb-16">
-            <span className="text-[#C5A059] font-clean text-xs uppercase tracking-[0.3em] font-bold block">
-              THE ARTISAN BEHIND THE LENS
-            </span>
-            <h2 className="font-editorial text-3xl sm:text-6xl font-light tracking-tight italic">
-              About Kamal Digital Studio
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12 items-center">
-            <div className="w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl mx-auto max-w-[240px] sm:max-w-sm border border-[#C5A059]/40 bg-stone-900">
-              <img 
-                src="https://res.cloudinary.com/doa6d6cyf/image/upload/v1791289207/DSC_0280.JPG_wkqf3m.jpg" 
-                alt="Jitendra Ji" 
-                loading="lazy"
-                className="w-full h-full object-cover grayscale-[15%]"
-              />
-            </div>
-
-            <div className="space-y-4 sm:space-y-6 max-w-md mx-auto text-center lg:text-left">
-              <h3 className="font-editorial text-2xl sm:text-3xl font-light italic text-[#E6C594]">Hey, Jitendra here!</h3>
-              <p className="font-clean text-xs sm:text-sm text-stone-300 leading-relaxed font-light tracking-wide">
-                Master photographer and memory-keeper at Kamal Digital Studio, Guratthi Court Road, Moradabad. My work is rooted in emotion, inspired by the quiet magic of everyday elegance and grand cultural celebrations across Uttar Pradesh.
-              </p>
-              <div className="pt-2 sm:pt-4">
-                <button
-                  onClick={() => setActiveTab && setActiveTab('contact')}
-                  className="px-7 py-3.5 bg-transparent text-[#F6F3EE] font-clean text-[10px] uppercase tracking-[0.25em] border border-[#C5A059]/60 hover:bg-[#C5A059] hover:text-black transition-all duration-300 cursor-pointer rounded-full font-bold"
-                >
-                  MORE ABOUT ME
-                </button>
-              </div>
-            </div>
-
-            <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl mx-auto max-w-[280px] sm:max-w-xs border border-[#C5A059]/40 bg-stone-900">
-              <img 
-                src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80" 
-                alt="Studio Gear" 
-                loading="lazy"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* =========================================================================
-          3. SELECTED WORKS SECTION (Original Links & 2x2 Grid)
+          5. WEDDING COVERAGE
       ======================================================================== */}
-      <section className="relative z-20 py-20 sm:py-28 px-4 sm:px-16 max-w-7xl mx-auto text-center border-t border-stone-300">
-        <div className="space-y-4 mb-12 sm:mb-16">
-          <h2 className="font-editorial text-4xl sm:text-6xl font-light tracking-tight">
-            Selected Works
-          </h2>
-          <p className="font-clean text-xs sm:text-sm text-stone-600 max-w-md mx-auto font-light">
-            Browse a curated collection of moments that have made their way into the hearts of clients.
-          </p>
-          <div className="pt-2">
-            <button
-              onClick={() => setActiveTab && setActiveTab('portfolio')}
-              className="px-6 py-3 bg-transparent text-[#1A1A1A] font-clean text-[10px] uppercase tracking-[0.25em] border border-stone-800 hover:bg-stone-900 hover:text-white transition-all duration-300 cursor-pointer font-bold"
-            >
-              CHECK OUT PORTFOLIO
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-4 sm:gap-8 text-left pt-2 sm:pt-6">
-          <div 
-            onClick={() => setLightboxImg({ url: "https://res.cloudinary.com/doa6d6cyf/image/upload/v1787200601/DSC05369_vlepcy.jpg", title: "Bridal Portrait", category: "WEDDING" })}
-            className="cursor-pointer group space-y-2 sm:space-y-3"
-          >
-            <div className="w-full aspect-[5/5] rounded-2xl overflow-hidden bg-stone-300">
-              <img src="https://res.cloudinary.com/doa6d6cyf/image/upload/v1787200601/DSC05369_vlepcy.jpg" alt="Bridal" loading="eager" fetchPriority="high" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            </div>
-            <div>
-              <span className="font-clean text-[9px] uppercase tracking-widest text-amber-800 font-bold">[01]</span>
-              <h4 className="font-editorial text-base sm:text-xl font-medium">Bridal Portrait</h4>
-              <span className="font-clean text-[10px] uppercase tracking-wider text-stone-600 hidden sm:inline">WEDDING</span>
-            </div>
-          </div>
-
-          <div 
-            onClick={() => setLightboxImg({ url: "https://res.cloudinary.com/tkhv6b6p/image/upload/v1791141092/vicky-photography-studio-nandauli-ayodhya-photographers-1q963uv9fi.avif", title: "Couple", category: "Couple Shoot" })}
-            className="cursor-pointer group space-y-2 sm:space-y-3 md:mt-16"
-          >
-            <div className="w-full aspect-[5/4] rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-100">
-              <img src="https://res.cloudinary.com/tkhv6b6p/image/upload/v1791141092/vicky-photography-studio-nandauli-ayodhya-photographers-1q963uv9fi.avif" alt="Couple" loading="eager" fetchPriority="high" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            </div>
-            <div>
-              <span className="font-clean text-[9px] uppercase tracking-widest text-amber-800 font-bold">[02]</span>
-              <h4 className="font-editorial text-base sm:text-xl font-medium">Couple Shoot</h4>
-              <span className="font-clean text-[10px] uppercase tracking-wider text-stone-800 hidden sm:inline">Couple Shoot</span>
-            </div>
-          </div>
-
-          <div 
-            onClick={() => setLightboxImg({ url: "https://res.cloudinary.com/tkhv6b6p/image/upload/v1791141091/9e91eb85f896212dccaf39f0682c985c.jpg", title: "Pre Wedding", category: "Pre Wedding" })}
-            className="cursor-pointer group space-y-2 sm:space-y-3"
-          >
-            <div className="w-full aspect-[4/3] rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-200 shadow-sm">
-              <img 
-                src="https://res.cloudinary.com/tkhv6b6p/image/upload/v1791141091/9e91eb85f896212dccaf39f0682c985c.jpg" 
-                alt="Pre Wedding" 
-                loading="eager" 
-                fetchPriority="high"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-              />
-            </div>
-            <div>
-              <span className="font-clean text-[9px] uppercase tracking-widest text-amber-800 font-bold">[03]</span>
-              <h4 className="font-editorial text-base sm:text-xl font-medium">Pre-Wedding Cinema</h4>
-              <span className="font-clean text-[10px] uppercase tracking-wider text-stone-500 hidden sm:inline">Outdoor Locations</span>
-            </div>
-          </div>
-
-          <div 
-            onClick={() => setLightboxImg({ url: "https://res.cloudinary.com/tkhv6b6p/image/upload/v1791141093/vicky-photography-studio-nandauli-ayodhya-photographers-92bh153zha.avif", title: "Couple Wedding", category: "WEDDING" })}
-            className="cursor-pointer group space-y-2 sm:space-y-3 md:-mt-12"
-          >
-            <div className="w-full aspect-[16/10] rounded-2xl overflow-hidden bg-stone-300">
-              <img src="https://res.cloudinary.com/tkhv6b6p/image/upload/v1791141093/vicky-photography-studio-nandauli-ayodhya-photographers-92bh153zha.avif" alt="Wedding" loading="eager" fetchPriority="high" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            </div>
-            <div>
-              <span className="font-clean text-[9px] uppercase tracking-widest text-amber-800 font-bold">[04]</span>
-              <h4 className="font-editorial text-base sm:text-xl font-medium">Couple Wedding</h4>
-              <span className="font-clean text-[10px] uppercase tracking-wider text-stone-600 hidden sm:inline">WEDDING</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          4. WEDDING COVERAGE SECTION (Dark Theme)
-      ======================================================================== */}
-      <section className="relative z-20 py-20 sm:py-28 px-6 sm:px-16 bg-[#0A0908] text-[#F6F3EE]">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 mb-12 sm:mb-16">
+      <section 
+        ref={coverageRef}
+        className="relative z-20 py-24 sm:py-36 px-6 sm:px-16 bg-[#EFECE6] text-[#1A1A1A] border-t border-stone-300"
+      >
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-12">
           <div className="space-y-2">
-            <h2 className="font-editorial text-4xl sm:text-6xl font-light italic">
+            <span className="text-[#B8860B] font-luxury-sans text-xs uppercase tracking-[0.35em] font-bold block">
+              TIMELESS CELEBRATIONS
+            </span>
+            <h2 className="font-luxury-serif text-3xl sm:text-5xl font-light italic text-stone-900">
               Wedding Coverage
             </h2>
           </div>
-          <div className="max-w-xl space-y-4">
-            <p className="font-clean text-xs sm:text-sm text-stone-400 font-light leading-relaxed">
-              Your wedding day is not a list of moments to caption — it's a feeling to be lived. At Kamal Digital Studio, we document weddings with absolute devotion to the real story of your day across Moradabad and beyond.
+          <div className="max-w-xl">
+            <p className="font-luxury-sans text-sm text-stone-700 font-light leading-relaxed tracking-wider">
+              Documenting grand rituals, quiet emotional pauses, and legendary celebrations across Moradabad and destination venues with absolute artistic integrity.
             </p>
-            <div>
-              <button
-                onClick={() => setActiveTab && setActiveTab('services')}
-                className="px-6 py-3 bg-transparent text-[#F6F3EE] font-clean text-[10px] uppercase tracking-[0.25em] border border-[#C5A059]/60 hover:bg-[#C5A059] hover:text-black transition-all duration-300 cursor-pointer font-bold"
-              >
-                LEARN MORE
-              </button>
-            </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {[
             "https://res.cloudinary.com/doa6d6cyf/image/upload/v1788587741/IMG_2859.JPG_kskybg.jpg",
             "https://res.cloudinary.com/doa6d6cyf/image/upload/v1787200591/IMG_5643.JPG_y7fuic.jpg",
             "https://res.cloudinary.com/doa6d6cyf/image/upload/v1784919032/Screenshot_2026-07-25_001554_tldmhh.jpg",
-            "https://res.cloudinary.com/tkhv6b6p/image/upload/v1791140828/vicky-photography-studio-nandauli-ayodhya-photographers-d2gfw3ovz1.avif",
-            "https://res.cloudinary.com/tkhv6b6p/image/upload/v1791140827/vicky-photography-studio-nandauli-ayodhya-photographers-rx9tzh0jtw.avif"
+            "https://res.cloudinary.com/tkhv6b6p/image/upload/v1791140828/vicky-photography-studio-nandauli-ayodhya-photographers-d2gfw3ovz1.avif"
           ].map((imgUrl, i) => (
-            <div key={i} className="w-full aspect-[3/5] rounded-xl overflow-hidden bg-stone-900 border border-[#C5A059]/30 group">
-              <img src={imgUrl} alt={`Coverage ${i}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div 
+              key={i} 
+              onClick={() => setLightboxImg({ url: imgUrl, title: "Wedding Coverage", category: "KAMAL DIGITAL STUDIO" })}
+              className="w-full aspect-[3/4.5] rounded-xl overflow-hidden bg-white border border-stone-300 group shadow-sm cursor-pointer p-1.5 transition-all duration-500 hover:shadow-xl"
+            >
+              <img src={imgUrl} alt={`Coverage ${i}`} loading="lazy" className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-700" />
             </div>
           ))}
         </div>
       </section>
 
-      {/* =========================================================================
-          5. QUESTIONS SECTION (Styled & Polished)
-      ======================================================================== */}
-      <section className="relative z-20 py-20 sm:py-28 px-6 sm:px-16 max-w-7xl mx-auto border-t border-stone-300">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 items-start">
-          <div className="space-y-6 lg:sticky lg:top-28">
-            <h2 className="font-editorial text-4xl sm:text-7xl font-light tracking-tight">
-              Questions
-            </h2>
-            <p className="font-clean text-xs sm:text-sm text-stone-600 max-w-xs font-light leading-relaxed">
-              Have questions? Find helpful answers to understand us and how our process makes design simple.
-            </p>
-            <div>
-              <button
-                onClick={() => setActiveTab && setActiveTab('contact')}
-                className="px-6 py-3 bg-transparent text-[#1A1A1A] font-clean text-[10px] uppercase tracking-[0.25em] border border-stone-800 hover:bg-stone-900 hover:text-white transition-all duration-300 cursor-pointer font-bold"
-              >
-                ASK ME A QUESTION
-              </button>
-            </div>
-          </div>
-
-          <div className="divide-y divide-stone-300 border-t border-b border-stone-300">
-            {faqList.map((faq, idx) => (
-              <div key={idx} className="py-4 sm:py-5 transition-colors">
-                <button
-                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                  className="w-full text-left flex justify-between items-center gap-4 cursor-pointer focus:outline-none group"
-                >
-                  <span className="font-editorial text-lg sm:text-xl font-normal group-hover:text-amber-800 transition-colors">
-                    {faq.q}
-                  </span>
-                  <span className="text-amber-800 p-2 rounded-full bg-stone-200/50 group-hover:bg-amber-100 transition-all">
-                    {openFaq === idx ? <Minus size={14} /> : <Plus size={14} />}
-                  </span>
-                </button>
-                {openFaq === idx && (
-                  <p className="mt-3 font-clean text-xs sm:text-sm text-stone-600 font-light leading-relaxed pl-1 animate-fadeIn">
-                    {faq.a}
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* =========================================================================
-          6. SHALL WE BEGIN? (Dark Theme CTA Banner)
-      ======================================================================== */}
-      <section className="relative z-20 w-full min-h-[70svh] sm:min-h-[80svh] bg-[#0A0908] text-[#F6F3EE] flex items-center justify-center overflow-hidden py-20 px-6 border-t border-[#C5A059]/20">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://t3.ftcdn.net/jpg/03/38/79/70/360_F_338797073_CsO0jjvg8f8E9WqPJJn072tBwYrsFOcH.jpg" 
-            alt="CTA Background" 
-            loading="lazy"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-[#0A0908]/85" />
-        </div>
-
-        <div className="relative z-10 max-w-xl w-full mx-auto p-6 sm:p-14 bg-black/90 backdrop-blur-md rounded-2xl border border-[#C5A059]/40 text-center space-y-6 shadow-2xl">
-          <h2 className="font-editorial text-3xl sm:text-5xl font-light italic tracking-wide text-[#E6C594]">
-            SHALL WE BEGIN?
-          </h2>
-          <p className="font-clean text-xs sm:text-sm text-stone-300 font-light leading-relaxed">
-            I'd love to work with you. In order to create from a place of inspiration, I accept a limited number of commissions each year. Inquire for collections and to reserve your date.
-          </p>
-          <div className="pt-2">
-            <button
-              onClick={() => setActiveTab && setActiveTab('contact')}
-              className="px-8 py-4 bg-[#C5A059] hover:bg-[#b08b45] text-stone-950 font-clean text-[10px] uppercase tracking-[0.25em] font-bold rounded-full transition-all duration-300 cursor-pointer shadow-lg"
-            >
-              GET IN TOUCH
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          LIGHTBOX MODAL FOR IMAGES
+          LIGHTBOX MODAL
       ======================================================================== */}
       {lightboxImg && (
         <div
-          className="fixed inset-0 z-[99999] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4"
+          className="fixed inset-0 z-[99999] bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center p-4"
           onClick={() => setLightboxImg(null)}
         >
           <button
             onClick={() => setLightboxImg(null)}
-            className="absolute top-6 right-6 z-50 px-5 py-2.5 rounded-full bg-white/10 text-white flex items-center gap-2 font-clean text-xs uppercase tracking-widest border border-white/20 transition-all cursor-pointer"
+            className="absolute top-6 right-6 z-50 px-5 py-2 rounded-full bg-white/10 text-white flex items-center gap-2 font-luxury-sans text-xs uppercase tracking-widest border border-white/20 transition-all cursor-pointer hover:bg-white/20"
           >
             <span>Close</span>
             <X size={16} />
@@ -355,13 +284,13 @@ export default function Home({ setActiveTab }) {
             <img
               src={lightboxImg.url}
               alt="Kamal Digital Studio Masterpiece"
-              className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl border border-[#C5A059]/40"
+              className="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl border border-stone-700"
             />
             <div className="mt-4 text-center text-white space-y-1">
-              <span className="font-clean text-xs tracking-widest text-[#E6C594] uppercase block font-bold">
+              <span className="font-luxury-sans text-xs tracking-widest text-[#E6C594] uppercase block font-bold">
                 {lightboxImg.category}
               </span>
-              <h3 className="font-editorial text-2xl font-bold">{lightboxImg.title}</h3>
+              <h3 className="font-luxury-serif text-xl font-bold">{lightboxImg.title}</h3>
             </div>
           </div>
         </div>

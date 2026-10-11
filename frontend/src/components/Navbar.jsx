@@ -8,13 +8,15 @@ import {
   LogOut, 
   ArrowRight, 
   X,
-  Menu
+  Menu,
+  Camera
 } from 'lucide-react';
 
 export default function Navbar({ currentView, setCurrentView, onLogout, activeTab, setActiveTab, openLoginModal }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
 
+  // 4 Navigation tabs as requested: Home, Portfolio, Tariffs, Contact
   const navTabs = [
     { id: 'home', label: 'Home' },
     { id: 'portfolio', label: 'Portfolio' },
@@ -33,12 +35,21 @@ export default function Navbar({ currentView, setCurrentView, onLogout, activeTa
     if (setCurrentView) setCurrentView('public');
     if (setActiveTab) setActiveTab(id);
     setMobileMenuOpen(false);
+
+    if (id === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
   };
 
+  // Show navbar only when user is within the Hero/Home section, hide once scrolled past
   useEffect(() => {
     const handleScroll = () => {
-      // Hero section height ke mutabiq threshold (jaise hi hero cross hoga, navbar hide ho jayega)
-      const heroHeight = window.innerHeight * 0.8;
+      const heroHeight = window.innerHeight * 0.9;
       if (window.scrollY > heroHeight) {
         setShowNavbar(false);
       } else {
@@ -57,18 +68,17 @@ export default function Navbar({ currentView, setCurrentView, onLogout, activeTa
         .font-luxury-serif { font-family: 'Cormorant Garamond', Georgia, serif; }
         .font-luxury-sans { font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        .luxury-nav-glass {
-          background: rgba(246, 243, 238, 0.88);
-          backdrop-filter: blur(25px) saturate(190%);
-          border: 1px solid rgba(197, 160, 89, 0.25);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        /* Completely Transparent with NO blur behind */
+        .crystal-clear-nav {
+          background: transparent;
+          border-bottom: none;
         }
 
         .mobile-glass-dock {
-          background: rgba(10, 9, 8, 0.96);
-          backdrop-filter: blur(24px) saturate(180%);
-          border: 1px solid rgba(197, 160, 89, 0.35);
-          box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8);
+          background: rgba(246, 243, 238, 0.95);
+          backdrop-filter: blur(20px) saturate(180%);
+          border: 1px solid rgba(197, 160, 89, 0.3);
+          box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15);
         }
 
         @keyframes fadeInDrawer {
@@ -79,24 +89,32 @@ export default function Navbar({ currentView, setCurrentView, onLogout, activeTa
       `}</style>
 
       {/* =========================================================================
-          1. DESKTOP FLOATING ULTRA-PREMIUM NAVBAR (Smooth Fade In/Out based on Hero)
-      ========================================================================= */}
-      <nav className={`hidden lg:flex fixed top-4 left-1/2 -translate-x-1/2 z-[9000] w-[92%] max-w-7xl items-center justify-between px-8 py-3.5 rounded-full luxury-nav-glass transition-all duration-700 ease-in-out ${
+          1. DESKTOP TRANSPARENT TOP NAVBAR (Visible only on Home Section)
+      ======================================================================== */}
+      <nav className={`hidden lg:flex fixed top-0 left-0 right-0 z-[9000] w-full items-center justify-between px-10 py-6 crystal-clear-nav transition-all duration-700 ease-in-out ${
         showNavbar ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-10 pointer-events-none'
       }`}>
         
-        {/* Brand Logo */}
+        {/* Brand Logo with 'K' icon & Camera */}
         <div 
           onClick={() => handleTabSelect('home')}
-          className="cursor-pointer text-left group shrink-0"
+          className="cursor-pointer text-left group flex items-center gap-3 shrink-0"
         >
-          <span className="font-luxury-serif text-xl font-medium tracking-[0.25em] text-[#1A1A1A] block group-hover:text-[#B8860B] transition-colors uppercase">
-            KAMAL <span className="italic font-light text-[#B8860B]">DIGITAL</span>
-          </span>
+          <div className="w-10 h-10 rounded-full border border-white/40 bg-black/30 backdrop-blur-xs flex items-center justify-center text-[#E6C594] relative shadow-lg">
+            <span className="font-luxury-serif text-lg font-bold">K</span>
+            <div className="absolute -bottom-1 -right-1 bg-[#C5A059] p-0.5 rounded-full text-stone-950">
+              <Camera size={10} />
+            </div>
+          </div>
+          <div>
+            <span className="font-luxury-serif text-base font-semibold tracking-[0.2em] text-white block group-hover:text-[#E6C594] transition-colors uppercase drop-shadow-md">
+              KAMAL DIGITAL <span className="italic font-light text-[#E6C594]">STUDIO</span>
+            </span>
+          </div>
         </div>
 
-        {/* Center Minimal Navigation Links */}
-        <div className="flex items-center gap-8 bg-white/60 px-6 py-2 rounded-full border border-stone-200/80 shadow-2xs">
+        {/* Center Navigation Links (Home, Portfolio, Tariffs, Contact) */}
+        <div className="flex items-center gap-7 bg-black/30 backdrop-blur-md px-7 py-2.5 rounded-full border border-white/20 shadow-xl">
           {currentView === 'public' && navTabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -104,33 +122,33 @@ export default function Navbar({ currentView, setCurrentView, onLogout, activeTa
                 key={tab.id}
                 onClick={() => handleTabSelect(tab.id)}
                 className={`font-luxury-sans text-xs font-medium tracking-[0.2em] uppercase transition-all duration-300 cursor-pointer relative py-1 ${
-                  isActive ? 'text-[#B8860B] font-bold' : 'text-stone-600 hover:text-black'
+                  isActive ? 'text-[#E6C594] font-bold' : 'text-stone-200 hover:text-white'
                 }`}
               >
                 <span>{tab.label}</span>
                 {isActive && (
-                  <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#B8860B] rounded-full animate-pulse" />
+                  <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#E6C594] rounded-full animate-pulse" />
                 )}
               </button>
             );
           })}
         </div>
 
-        {/* Right Actions (Vault & Luxury CTA) */}
-        <div className="flex items-center gap-3.5">
+        {/* Right Actions (Vault Lock & Book Shoot CTA) */}
+        <div className="flex items-center gap-4">
           {currentView === 'public' ? (
             <>
               <button
                 onClick={openLoginModal}
-                className="w-9 h-9 rounded-full bg-white hover:bg-stone-100 text-stone-800 border border-stone-200 flex items-center justify-center transition-all cursor-pointer shadow-2xs hover:scale-105"
+                className="w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 text-white border border-white/30 flex items-center justify-center transition-all cursor-pointer shadow-md backdrop-blur-md hover:scale-105"
                 title="Client Vault / Admin Portal"
               >
-                <Lock size={13} className="text-[#B8860B]" />
+                <Lock size={14} className="text-[#E6C594]" />
               </button>
 
               <button
                 onClick={() => handleTabSelect('contact')}
-                className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#C5A059] to-[#b08b45] hover:from-[#d4af37] hover:to-[#c5a059] text-stone-950 font-luxury-sans text-[11px] font-bold uppercase tracking-[0.25em] transition-all hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md border border-amber-200/50"
+                className="px-7 py-2.5 rounded-full bg-gradient-to-r from-[#C5A059] to-[#b08b45] hover:from-[#d4af37] hover:to-[#c5a059] text-stone-950 font-luxury-sans text-[11px] font-bold uppercase tracking-[0.25em] transition-all hover:scale-105 cursor-pointer flex items-center gap-2 shadow-xl border border-amber-200/50"
               >
                 <span>Book Shoot</span>
                 <ArrowRight size={12} />
@@ -149,17 +167,23 @@ export default function Navbar({ currentView, setCurrentView, onLogout, activeTa
       </nav>
 
       {/* =========================================================================
-          2. LUXURY MOBILE TOP BRAND HEADER (Smooth Scroll Aware)
-      ========================================================================= */}
-      <header className={`lg:hidden fixed top-0 left-0 w-full z-[8998] px-5 py-3.5 bg-[#F6F3EE]/95 backdrop-blur-md border-b border-stone-300 flex items-center justify-between text-[#1A1A1A] shadow-sm transition-all duration-700 ease-in-out ${
+          2. MOBILE TRANSPARENT TOP HEADER (Visible only on Home Section)
+      ======================================================================== */}
+      <header className={`lg:hidden fixed top-0 left-0 w-full z-[8998] px-5 py-4 crystal-clear-nav flex items-center justify-between text-white shadow-sm transition-all duration-700 ease-in-out ${
         showNavbar ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-10 pointer-events-none'
       }`}>
         <div 
           onClick={() => handleTabSelect('home')}
-          className="cursor-pointer shrink-0 text-left"
+          className="cursor-pointer shrink-0 flex items-center gap-2.5 text-left"
         >
-          <span className="font-luxury-serif text-base font-medium tracking-[0.2em] text-[#1A1A1A] block uppercase">
-            KAMAL <span className="italic text-[#B8860B]">DIGITAL</span>
+          <div className="w-8 h-8 rounded-full border border-white/40 bg-black/40 flex items-center justify-center text-[#E6C594] relative shadow">
+            <span className="font-luxury-serif text-sm font-bold">K</span>
+            <div className="absolute -bottom-1 -right-1 bg-[#C5A059] p-0.5 rounded-full text-stone-950">
+              <Camera size={8} />
+            </div>
+          </div>
+          <span className="font-luxury-serif text-xs font-semibold tracking-[0.18em] text-white block uppercase drop-shadow">
+            KAMAL DIGITAL <span className="italic text-[#E6C594]">STUDIO</span>
           </span>
         </div>
 
@@ -167,16 +191,16 @@ export default function Navbar({ currentView, setCurrentView, onLogout, activeTa
           {currentView === 'public' && (
             <button
               onClick={openLoginModal}
-              className="px-3.5 py-1.5 rounded-full bg-stone-200/90 border border-stone-300 text-stone-900 text-[10px] font-luxury-sans font-bold uppercase tracking-wider flex items-center gap-1 shadow-2xs"
+              className="px-3 py-1.5 rounded-full bg-black/40 border border-white/30 text-white text-[10px] font-luxury-sans font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm"
             >
-              <Lock size={11} className="text-[#B8860B]" />
+              <Lock size={10} className="text-[#E6C594]" />
               <span>Vault</span>
             </button>
           )}
 
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-stone-900 text-[#C5A059] cursor-pointer active:scale-95 transition-transform shadow-sm"
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-black/50 text-[#C5A059] border border-white/20 cursor-pointer active:scale-95 transition-transform shadow-sm"
             aria-label="Open Full Menu"
           >
             <Menu size={18} />
@@ -186,7 +210,7 @@ export default function Navbar({ currentView, setCurrentView, onLogout, activeTa
 
       {/* =========================================================================
           3. MOBILE FLOATING GLASS BOTTOM DOCK
-      ========================================================================= */}
+      ======================================================================== */}
       <div className="lg:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-[8999] w-[94%] max-w-sm pointer-events-auto">
         <div className="mobile-glass-dock rounded-2xl p-2 flex items-center justify-around shadow-2xl">
           {mobileQuickTabs.map((tab) => {
@@ -198,7 +222,7 @@ export default function Navbar({ currentView, setCurrentView, onLogout, activeTa
                 className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 cursor-pointer ${
                   isActive
                     ? 'bg-[#C5A059] text-stone-950 font-bold shadow-lg scale-105'
-                    : 'text-stone-400 hover:text-stone-100'
+                    : 'text-stone-600 hover:text-black'
                 }`}
               >
                 <span>{tab.icon}</span>
@@ -213,13 +237,13 @@ export default function Navbar({ currentView, setCurrentView, onLogout, activeTa
 
       {/* =========================================================================
           4. FULL-SCREEN EDITORIAL MOBILE DRAWER
-      ========================================================================= */}
+      ======================================================================== */}
       {mobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 z-[9999] bg-[#0A0908]/98 backdrop-blur-3xl p-6 flex flex-col justify-between text-[#F6F3EE] overflow-y-auto animate-drawer">
           <div className="flex items-center justify-between border-b border-[#C5A059]/30 pb-4">
             <div className="text-left">
-              <h3 className="font-luxury-serif text-lg font-light tracking-widest text-[#F6F3EE]">
-                KAMAL <span className="italic text-[#C5A059]">DIGITAL</span>
+              <h3 className="font-luxury-serif text-sm font-light tracking-widest text-[#F6F3EE] uppercase">
+                KAMAL DIGITAL <span className="italic text-[#C5A059]">STUDIO</span>
               </h3>
             </div>
 

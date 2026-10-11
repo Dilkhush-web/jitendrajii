@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
-import Story from './components/Story';
-import Services from './components/Services';
-import Footer from './components/Footer';
 import Hero from './components/Hero';
-import Films from './components/Films';
+import Story from './components/Story';
 import Portfolio from './components/Portfolio';
+import Services from './components/Services';
 import Contact from './components/Contact';
-import Testimonials from './components/Testimonials';
+import Footer from './components/Footer';
 
 // Secure Executive Control Panels
 import ClientVault from './panels/ClientVault';
@@ -97,7 +95,7 @@ export default function App() {
   };
 
   return (
-    <div className="bg-[#FAF8F5] min-h-screen text-stone-900 select-none overflow-x-hidden selection:bg-amber-100 selection:text-amber-900 relative w-full flex flex-col">
+    <div className="bg-[#FAF8F5] min-h-screen text-stone-900 select-none overflow-x-hidden selection:bg-amber-100 selection:text-amber-900 relative w-full flex flex-col" style={{ scrollBehavior: 'smooth' }}>
       
       {/* 🔮 MASTER LUXURY STYLES */}
       <style>{`
@@ -175,33 +173,32 @@ export default function App() {
       <div className="w-full min-h-screen flex flex-col flex-1 pt-12 lg:pt-0 transition-all duration-300">
         
         <main className="flex-1 w-full">
-          {currentView === 'public' && (
-            <div className="w-full">
-              {activeTab === 'home' && <div className="animate-fade-in"><Hero setActiveTab={setActiveTab} /></div>}
-              {activeTab === 'story' && <div className="animate-fade-in"><Story setActiveTab={setActiveTab} /></div>}
-              {activeTab === 'films' && <div className="animate-fade-in"><Films setActiveTab={setActiveTab} /></div>}
-              {activeTab === 'portfolio' && <div className="animate-fade-in"><Portfolio setActiveTab={setActiveTab} /></div>}
-              {activeTab === 'services' && <div className="animate-fade-in"><Services setActiveTab={setActiveTab} /></div>}
-              {activeTab === 'testimonials' && <div className="animate-fade-in"><Testimonials setActiveTab={setActiveTab} /></div>}
-              {activeTab === 'contact' && <div className="animate-fade-in"><Contact setActiveTab={setActiveTab} /></div>}
+          {currentView === 'public' ? (
+            <div className="w-full flex flex-col">
+              <section id="home" className="w-full"><Hero setActiveTab={setActiveTab} /></section>
+              <section id="story" className="w-full"><Story setActiveTab={setActiveTab} /></section>
+              <section id="portfolio" className="w-full"><Portfolio setActiveTab={setActiveTab} /></section>
+              <section id="services" className="w-full"><Services setActiveTab={setActiveTab} /></section>
+              <section id="contact" className="w-full"><Contact setActiveTab={setActiveTab} /></section>
             </div>
-          )}
-
-          {/* SECURE DASHBOARDS & CONTROL REPOSITORIES */}
-          {currentView === 'client-vault' && (
-            <div className="p-4 sm:p-8 max-w-7xl mx-auto">
-              <ClientVault onLogout={handleLogout} clientId={authenticatedClient} />
-            </div>
-          )}
-          {currentView === 'admin' && (
-            <div className="p-4 sm:p-8 max-w-7xl mx-auto">
-              <AdminDashboard onLogout={handleLogout} />
-            </div>
-          )}
-          {currentView === 'crew' && (
-            <div className="p-4 sm:p-8 max-w-7xl mx-auto">
-              <CrewWorkspace onLogout={handleLogout} />
-            </div>
+          ) : (
+            <>
+              {currentView === 'client-vault' && (
+                <div className="p-4 sm:p-8 max-w-7xl mx-auto">
+                  <ClientVault onLogout={handleLogout} clientId={authenticatedClient} />
+                </div>
+              )}
+              {currentView === 'admin' && (
+                <div className="p-4 sm:p-8 max-w-7xl mx-auto">
+                  <AdminDashboard onLogout={handleLogout} />
+                </div>
+              )}
+              {currentView === 'crew' && (
+                <div className="p-4 sm:p-8 max-w-7xl mx-auto">
+                  <CrewWorkspace onLogout={handleLogout} />
+                </div>
+              )}
+            </>
           )}
         </main>
 
